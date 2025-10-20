@@ -42,7 +42,7 @@ contract RebaseToken is ERC20 {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-    
+
     constructor() ERC20("RebaseToken", "RBT") {}
 
     /**
@@ -62,10 +62,14 @@ contract RebaseToken is ERC20 {
         emit InterestRateUpdated(s_interestRate, _newInterestRate);
     }
 
+    /**
+     * @notice Mints new tokens to a user
+     * @param _to The address of the user to mint tokens to
+     * @param _amount The amount of tokens to mint
+     */
     function mint(address _to, uint256 _amount) external {
         _mintAccruedInterest(_to);
         s_userInterestRate[_to] = s_interestRate;
-
         _mint(_to, _amount);
     }
 
@@ -73,8 +77,15 @@ contract RebaseToken is ERC20 {
                            INTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
+    /**
+     * @notice Mints the accrued interest for a user
+     * @param _user The address of the user
+     */
     function _mintAccruedInterest(address _user) internal {
+        uint256 interestToMint = super.balanceOf(_user) - balanceOf(_user);
         s_userLastUpdatedTimestamp[_user] = block.timestamp;
+        _mint(_user, interestToMint);
+        
     }
     /*//////////////////////////////////////////////////////////////
                              VIEW FUNCTIONS
