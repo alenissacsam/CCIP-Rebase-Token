@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.30;
 
-import {TokenPool,IERC20} from "@chainlink/contracts/src/v0.8/ccip/pools/TokenPool.sol";
+import {TokenPool, IERC20} from "@chainlink/contracts/src/v0.8/ccip/pools/TokenPool.sol";
 import {Pool} from "@chainlink/contracts/src/v0.8/ccip/libraries/Pool.sol";
 import {IRebaseToken} from "./interfaces/IRebaseToken.sol";
 
@@ -19,24 +19,25 @@ contract RebaseTokenPool is TokenPool {
     ) external returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut) {
         _validateLockOrBurn(lockOrBurnIn);
 
-        address receiver = abi.decode(lockOrBurnIn.receiver, (address));    
-        uint256 userInterestRate = IRebaseToken(address(i_token)).getUserInterestRate(
-            receiver
-        );
+        address receiver = abi.decode(lockOrBurnIn.receiver, (address));
+        uint256 userInterestRate = IRebaseToken(address(i_token))
+            .getUserInterestRate(receiver);
 
-        IRebaseToken(address(i_token)).burn(
-            address(this),
-            lockOrBurnIn.amount
-        );
+        IRebaseToken(address(i_token)).burn(address(this), lockOrBurnIn.amount);
 
-        lockOrBurnOut.destTokenAddress = abi.encode(address(i_token));
-        lockOrBurnOut.destPoolData = abi.encode(userInterestRate);
+        lockOrBurnOut = Pool.LockOrBurnOutV1({
+            destTokenAddress: abi.encode(address(i_token)),
+            destPoolData: abi.encode(userInterestRate)
+        });
     }
 
     function releaseOrMint(
         Pool.ReleaseOrMintInV1 calldata releaseOrMintIn
     ) external returns (Pool.ReleaseOrMintOutV1 memory) {
         _validateReleaseOrMint(releaseOrMintIn);
+        uint256 userInterestRate = abi.decode(
+            releaseOrMintIn.sourcePoolData,
+            (uint256)
+        );
     }
-
 }
