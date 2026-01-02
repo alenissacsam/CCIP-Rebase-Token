@@ -3,6 +3,11 @@ pragma solidity ^0.8.30;
 
 import {IRebaseToken} from "./interfaces/IRebaseToken.sol";
 
+/**
+ * @title Vault
+ * @author AlenIssacSam
+ * @notice This contract allows users to deposit ETH and receive RebaseTokens, and redeem RebaseTokens for ETH
+ */
 contract Vault {
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
