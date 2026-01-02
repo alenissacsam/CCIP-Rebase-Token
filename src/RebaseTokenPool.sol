@@ -12,6 +12,10 @@ import {IRebaseToken} from "./interfaces/IRebaseToken.sol";
  * @notice This is a TokenPool implementation for the RebaseToken
  */
 contract RebaseTokenPool is TokenPool {
+
+    /*//////////////////////////////////////////////////////////////
+                               FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
     constructor(
         IERC20 _token,
         address[] memory _allowlist,
@@ -19,6 +23,15 @@ contract RebaseTokenPool is TokenPool {
         address _router
     ) TokenPool(_token, _allowlist, _rmnProxy, _router) {}
 
+    /*//////////////////////////////////////////////////////////////
+                           EXTERNAL FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @notice Locks or burns tokens from the sender and prepares data for cross-chain transfer
+     * @param lockOrBurnIn The input data for the lock or burn operation
+     * @return lockOrBurnOut The output data containing destination token address and pool data
+     */
     function lockOrBurn(
         Pool.LockOrBurnInV1 calldata lockOrBurnIn
     ) external returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut) {
@@ -35,6 +48,11 @@ contract RebaseTokenPool is TokenPool {
         });
     }
 
+    /**
+     * @notice Releases or mints tokens to the receiver based on cross-chain transfer data
+     * @param releaseOrMintIn The input data for the release or mint operation
+     * @return releaseOrMintOut The output data containing the amount of tokens released or minted
+     */
     function releaseOrMint(
         Pool.ReleaseOrMintInV1 calldata releaseOrMintIn
     ) external returns (Pool.ReleaseOrMintOutV1 memory releaseOrMintOut) {
