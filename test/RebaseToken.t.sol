@@ -52,7 +52,11 @@ contract RebaseTokenTest is Test {
 
         assertGt(balanceAfter2Hours, balanceAfter1Hour);
 
-        assertApproxEqAbs(balanceAfter2Hours - balanceAfter1Hour, balanceAfter1Hour - startBalance, 1);
+        assertApproxEqAbs(
+            balanceAfter2Hours - balanceAfter1Hour,
+            balanceAfter1Hour - startBalance,
+            1
+        );
 
         vm.stopPrank();
     }
@@ -155,11 +159,15 @@ contract RebaseTokenTest is Test {
         amount = bound(amount, 1e5, type(uint128).max);
 
         vm.prank(user1);
-        vm.expectPartialRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
-        rebaseToken.mint(user1, amount);
+        vm.expectPartialRevert(
+            IAccessControl.AccessControlUnauthorizedAccount.selector
+        );
+        rebaseToken.mint(user1, amount, rebaseToken.getInterestRate());
 
         vm.prank(user1);
-        vm.expectPartialRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
+        vm.expectPartialRevert(
+            IAccessControl.AccessControlUnauthorizedAccount.selector
+        );
         rebaseToken.burn(user1, amount);
     }
 
@@ -190,9 +198,15 @@ contract RebaseTokenTest is Test {
 
     function testInterestRateCanOnlyDecrease(uint256 newInterestRate) public {
         uint256 currentInterestRate = rebaseToken.getInterestRate();
-        newInterestRate = bound(newInterestRate, currentInterestRate, type(uint72).max);
+        newInterestRate = bound(
+            newInterestRate,
+            currentInterestRate,
+            type(uint72).max
+        );
         vm.prank(owner);
-        vm.expectPartialRevert(RebaseToken.RebaseToken__InterestRateCannotIncrease.selector);
+        vm.expectPartialRevert(
+            RebaseToken.RebaseToken__InterestRateCannotIncrease.selector
+        );
         rebaseToken.setInterestRate(newInterestRate);
 
         assertEq(rebaseToken.getInterestRate(), currentInterestRate);
