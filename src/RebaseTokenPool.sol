@@ -12,7 +12,6 @@ import {IRebaseToken} from "./interfaces/IRebaseToken.sol";
  * @notice This is a TokenPool implementation for the RebaseToken
  */
 contract RebaseTokenPool is TokenPool {
-
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
@@ -43,7 +42,7 @@ contract RebaseTokenPool is TokenPool {
         IRebaseToken(address(i_token)).burn(address(this), lockOrBurnIn.amount);
 
         lockOrBurnOut = Pool.LockOrBurnOutV1({
-            destTokenAddress: abi.encode(address(i_token)),
+            destTokenAddress: getRemoteToken(lockOrBurnIn.remoteChainSelector),
             destPoolData: abi.encode(userInterestRate)
         });
     }
