@@ -2,7 +2,11 @@
 pragma solidity ^0.8.30;
 
 interface IRebaseToken {
-    function mint(address _to, uint256 _amount, uint256 _userInterestRate) external;
+    function mint(
+        address _to,
+        uint256 _amount,
+        uint256 _userInterestRate
+    ) external;
 
     function burn(address _from, uint256 _amount) external;
 

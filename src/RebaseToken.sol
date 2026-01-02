@@ -27,7 +27,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
                                VARIABLES
     //////////////////////////////////////////////////////////////*/
 
-    uint256 private s_interestRate = (5 * PRECISION_FACTOR) / 1e8;
+    uint256 private s_interestRate = (5 * PRECISION_FACTOR) / 1e8; // The global interest rate
     mapping(address => uint256) private s_userInterestRate;
     mapping(address => uint256) private s_userLastUpdatedTimestamp;
 
@@ -106,16 +106,14 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @param _user The address of the user
      */
     function _mintAccruedInterest(address _user) internal {
-        uint256 interestToMint = balanceOf(_user) - super.balanceOf(_user);
         uint256 currentBalanceWithInterest = balanceOf(_user);
-        uint256 principalBalance = super.balanceOf(_user);
+        uint256 principalBalance = principalBalanceOf(_user);
         if (currentBalanceWithInterest > principalBalance) {
-            interestToMint = currentBalanceWithInterest -
+            uint256 interestToMint = currentBalanceWithInterest -
                 principalBalance;
             _mint(_user, interestToMint);
         }
         s_userLastUpdatedTimestamp[_user] = block.timestamp;
-        _mint(_user, interestToMint);
     }
 
     /**
@@ -157,7 +155,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
             _amount = balanceOf(_from);
         }
         if (super.balanceOf(_from) == 0) {
-            s_userInterestRate[_to] - s_userInterestRate[_from];
+            s_userInterestRate[_to] = s_userInterestRate[_from];
         }
         return super.transferFrom(_from, _to, _amount);
     }
@@ -185,7 +183,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @notice Gets the current interest rate of the vault
      * @return The current interest rate of the vault
      */
-    function getInterestRate() public view returns (uint256) {
+    function getInterestRate() external view returns (uint256) {
         return s_interestRate;
     }
 
@@ -194,7 +192,9 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @param _user The address of the user
      * @return The interest rate of the user
      */
-    function getUserInterestRate(address _user) public view returns (uint256) {
+    function getUserInterestRate(
+        address _user
+    ) external view returns (uint256) {
         return s_userInterestRate[_user];
     }
 
@@ -205,7 +205,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      */
     function balanceOf(address _user) public view override returns (uint256) {
         return
-            (super.balanceOf(_user) * _calculateAccruedInterest(_user)) /
+            (principalBalanceOf(_user) * _calculateAccruedInterest(_user)) /
             PRECISION_FACTOR;
     }
 
@@ -214,7 +214,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @param _user The address of the user
      * @return The principal balance of the user
      */
-    function principalBalanceOf(address _user) external view returns (uint256) {
+    function principalBalanceOf(address _user) public view returns (uint256) {
         return super.balanceOf(_user);
     }
 }

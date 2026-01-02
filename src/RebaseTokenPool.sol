@@ -2,10 +2,15 @@
 
 pragma solidity ^0.8.30;
 
-import {TokenPool, IERC20} from "@chainlink/contracts/src/v0.8/ccip/pools/TokenPool.sol";
-import {Pool} from "@chainlink/contracts/src/v0.8/ccip/libraries/Pool.sol";
+import {TokenPool, IERC20} from "@ccip/pools/TokenPool.sol";
+import {Pool} from "@ccip/libraries/Pool.sol";
 import {IRebaseToken} from "./interfaces/IRebaseToken.sol";
 
+/**
+ * @title RebaseTokenPool
+ * @author AlenIssacSam
+ * @notice This is a TokenPool implementation for the RebaseToken
+ */
 contract RebaseTokenPool is TokenPool {
     constructor(
         IERC20 _token,
